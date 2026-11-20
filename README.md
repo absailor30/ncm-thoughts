@@ -6,6 +6,8 @@ Easy-to-use Python wrapper and CLI for **Next-Concept Modeling (NCM)**, the fast
 Normal language models write one token at a time. NCM writes a rough version of the whole text first, then refines
 it in about 12 parallel steps. `ncm-lite` downloads the official released checkpoints and gives you one call to run them.
 
+**Try it in your browser (no install): https://huggingface.co/spaces/absailor/ncm-lite-demo**
+
 > Status: **0.1, unofficial.** Not affiliated with the paper's authors. The checkpoints are small research models,
 > so expect repetition, odd wording and made-up facts (see Limitations).
 
@@ -37,7 +39,7 @@ ncm-lite generate xsum --prompt "<article text>"
 Tasks: `tinystories`, `owt`, `lm1b-small|medium|large` (unconditional), `xsum` (summarize), `wmt14` (German to English).
 Sudoku checkpoints exist upstream but are not exposed in 0.1.
 
-Web demo: `pip install -e ".[demo]" && python examples/demo.py` (the app builds and its generate function runs; I have not clicked through the UI in a browser).
+Hosted demo: [absailor/ncm-lite-demo](https://huggingface.co/spaces/absailor/ncm-lite-demo) (source in `space/`; rebuild with `python tools/build_space.py`). Local version: `pip install -e ".[demo]" && python examples/demo.py`.
 
 ## Limitations (read this)
 - Output quality is that of the paper's ~90-100M parameter models. In my XSum test a summary invented "Oxford" and a "car lane" that were not in the article.
