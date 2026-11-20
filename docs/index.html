@@ -25,13 +25,14 @@ label.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut
 .new{background:var(--ok);color:#fff;font-size:10px;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
 .links a{font-size:13px;color:var(--acc);margin-right:12px;text-decoration:none}
 details summary{cursor:pointer;color:var(--mut);font-size:13px}p.abs{margin:6px 0 0;font-size:14px}
-#status{font-size:12px;color:var(--mut);margin:4px 0 12px}footer{max-width:900px;margin:30px auto;padding:0 16px;color:var(--mut);font-size:12px}
+#updated{margin-top:2px;font-weight:600;color:var(--fg)}#status{font-size:12px;color:var(--mut);margin:4px 0 12px}footer{max-width:900px;margin:30px auto;padding:0 16px;color:var(--mut);font-size:12px}
 </style>
 </head>
 <body>
 <header>
   <h1>Paper Radar</h1>
   <div class="sub">New AI papers from Hugging Face Daily Papers and arXiv, with code links. Updated every 2 hours.</div>
+  <div class="sub" id="updated" aria-live="polite"></div>
   <div class="bar">
     <input id="q" type="search" placeholder="Search title, abstract, authors…" aria-label="Search">
     <select id="sort" aria-label="Sort"><option value="date">Newest</option><option value="upvotes">Most upvoted</option><option value="stars">Most GitHub stars</option></select>
@@ -47,7 +48,7 @@ details summary{cursor:pointer;color:var(--mut);font-size:13px}p.abs{margin:6px 
 <footer>Data: Hugging Face Daily Papers + arXiv. Topic tags are keyword-based and approximate. Source: this repo, <code>radar/</code>.</footer>
 <script>
 const REFRESH_MS = 2*60*60*1000;
-let papers=[], topics={}, active=new Set(), generated=null, lastSeen=0;
+let papers=[], topics={}, active=new Set(), generated=null, checkedAt=null, lastSeen=0;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
@@ -89,11 +90,18 @@ async function load(live){
     if(live) for(const p of await loadLiveHF()) map.set(p.id,p);
     papers=[...map.values()].map(tag);
     drawChips(); render();
-    const g=generated?new Date(generated).toLocaleString():'unknown';
-    $('status').textContent=`${papers.length} papers · site data built ${g}${live?' · live HF check done':''} · next auto-refresh in 2h`;
+    checkedAt=new Date(); showUpdated();
+    $('status').textContent=`${papers.length} papers · next auto-refresh in 2h`;
   }catch(e){ $('status').textContent='Could not load data: '+e.message; }
   $('refresh').disabled=false;
 }
+function ago(d){const m=Math.max(0,Math.round((Date.now()-d)/6e4));return m<1?'just now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h '+(m%60)+' min ago':Math.floor(m/1440)+' d ago'}
+function showUpdated(){
+  if(!generated) return;
+  const g=new Date(generated), fmt=d=>d.toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+  $('updated').textContent=`Data updated: ${fmt(g)} (${ago(g)})`+(checkedAt?` · last checked: ${fmt(checkedAt)}`:'');
+}
+setInterval(showUpdated,60000);
 function drawChips(){
   $('chips').innerHTML=Object.keys(topics).map(k=>`<span class="chip${active.has(k)?' on':''}" data-k="${esc(k)}">${esc(k)}</span>`).join('');
 }
