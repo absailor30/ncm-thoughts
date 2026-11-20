@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ncm-lite"
+version = "0.1.0"
+description = "Easy-to-use wrapper around Next-Concept Modeling (arXiv:2610.14162): fast, parallel, coarse-to-fine text generation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["torch", "transformers>=4.51", "omegaconf", "hydra-core", "huggingface_hub", "regex", "numpy"]
+
+[project.optional-dependencies]
+demo = ["gradio"]
+dev = ["pytest"]
+
+[project.scripts]
+ncm-lite = "ncm_lite.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ncm_lite*"]
+
+[tool.setuptools.package-data]
+ncm_lite = ["configs/*.yaml", "_upstream/LICENSE"]
+
+[tool.pytest.ini_options]
+markers = ["slow: downloads real checkpoints (set NCM_LITE_SLOW=1)"]
