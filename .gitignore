@@ -6,3 +6,4 @@ venv/
 build/
 dist/
 *.pt
+space/ncm_lite/__pycache__/
