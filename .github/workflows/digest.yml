@@ -1,0 +1,26 @@
+name: Weekly radar digest
+on:
+  schedule:
+    - cron: "30 3 * * 1"    # Mondays 03:30 UTC
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: radar
+  cancel-in-progress: false
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python radar/digest.py
+      - name: Commit digest
+        run: |
+          git config user.name "paper-radar[bot]"
+          git config user.email "paper-radar@users.noreply.github.com"
+          git add docs/data/digests
+          git diff --cached --quiet || (git commit -m "Weekly digest" && git pull --rebase -q && git push)

@@ -1,17 +1,134 @@
 {
-  "Diffusion & parallel text generation": ["diffusion language", "masked diffusion", "parallel decoding", "non-autoregressive", "next-concept", "coarse-to-fine", "speculative decoding"],
-  "Efficient inference & architecture": ["efficient", "inference", "quantization", "kv cache", "state space", "mamba", "linear attention", "mixture-of-experts", "moe", "sparse attention", "long context", "latency", "throughput"],
-  "Small & on-device models": ["small language model", "on-device", "edge", "tiny", "distillation", "lightweight", "consumer gpu"],
-  "LLM reasoning": ["reasoning", "chain-of-thought", "math", "test-time", "verifier", "planning"],
-  "Post-training & RL": ["reinforcement learning", "rlhf", "grpo", "preference", "reward model", "fine-tuning", "alignment", "dpo"],
-  "Agents & tool use": ["agent", "tool use", "tool-use", "mcp", "web navigation", "computer use", "multi-agent"],
-  "Code": ["code generation", "coding", "software engineering", "swe-bench", "program synthesis"],
-  "Retrieval, RAG & memory": ["retrieval", "rag", "memory", "embedding", "knowledge graph"],
-  "Multimodal & vision": ["multimodal", "vision-language", "vlm", "image", "video", "diffusion model", "text-to-image"],
-  "Speech & audio": ["speech", "audio", "tts", "asr", "music"],
-  "Robotics & embodied": ["robot", "embodied", "manipulation", "vla"],
-  "Safety & evaluation": ["safety", "jailbreak", "hallucination", "benchmark", "evaluation", "robustness", "interpretability"],
-  "Science, bio & health": ["protein", "biology", "medical", "clinical", "drug", "chemistry", "physics", "materials"],
-  "Data & datasets": ["dataset", "synthetic data", "data curation", "pretraining data", "corpus"],
-  "Open source releases": ["open-source", "open source", "we release", "open-weight", "open weights", "code is available", "github.com"]
+  "Diffusion & parallel text generation": [
+    "diffusion language",
+    "masked diffusion",
+    "parallel decoding",
+    "non-autoregressive",
+    "next-concept",
+    "coarse-to-fine",
+    "speculative decoding"
+  ],
+  "Efficient inference & architecture": [
+    "efficient",
+    "inference",
+    "quantization",
+    "kv cache",
+    "state space",
+    "mamba",
+    "linear attention",
+    "mixture-of-experts",
+    "moe",
+    "sparse attention",
+    "long context",
+    "latency",
+    "throughput"
+  ],
+  "Small & on-device models": [
+    "small language model",
+    "on-device",
+    "edge",
+    "tiny",
+    "distillation",
+    "lightweight",
+    "consumer gpu"
+  ],
+  "LLM reasoning": [
+    "reasoning",
+    "chain-of-thought",
+    "math",
+    "test-time",
+    "verifier",
+    "planning"
+  ],
+  "Post-training & RL": [
+    "reinforcement learning",
+    "rlhf",
+    "grpo",
+    "preference",
+    "reward model",
+    "fine-tuning",
+    "alignment",
+    "dpo"
+  ],
+  "Agents & tool use": [
+    "agent",
+    "tool use",
+    "tool-use",
+    "mcp",
+    "web navigation",
+    "computer use",
+    "multi-agent"
+  ],
+  "Code": [
+    "code generation",
+    "coding",
+    "software engineering",
+    "swe-bench",
+    "program synthesis"
+  ],
+  "Retrieval, RAG & memory": [
+    "retrieval",
+    "rag",
+    "long-term memory",
+    "agent memory",
+    "knowledge graph",
+    "embedding model"
+  ],
+  "Multimodal & vision": [
+    "multimodal",
+    "vision-language",
+    "vlm",
+    "image generation",
+    "video generation",
+    "text-to-image",
+    "diffusion model"
+  ],
+  "Speech & audio": [
+    "speech",
+    "audio",
+    "tts",
+    "asr",
+    "music"
+  ],
+  "Robotics & embodied": [
+    "robot",
+    "embodied",
+    "manipulation",
+    "vla"
+  ],
+  "Safety & evaluation": [
+    "safety",
+    "jailbreak",
+    "hallucination",
+    "red teaming",
+    "robustness",
+    "interpretability",
+    "adversarial"
+  ],
+  "Science, bio & health": [
+    "protein",
+    "biology",
+    "medical",
+    "clinical",
+    "drug",
+    "chemistry",
+    "physics",
+    "materials"
+  ],
+  "Data & datasets": [
+    "dataset",
+    "synthetic data",
+    "data curation",
+    "pretraining data",
+    "corpus"
+  ],
+  "Open source releases": [
+    "open-source",
+    "open source",
+    "we release",
+    "open-weight",
+    "open weights",
+    "code is available",
+    "github.com"
+  ]
 }
