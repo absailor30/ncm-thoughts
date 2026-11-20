@@ -50,7 +50,7 @@ Hosted demo: [absailor/ncm-lite-demo](https://huggingface.co/spaces/absailor/ncm
 ## Repo layout
 - `ncm_lite/`: the package. `_upstream/` is a mechanically rewritten copy of the official code (do not edit; regenerate with `python tools/sync_upstream.py`).
 - `vendor/ncm/`: untouched copy of [HazyResearch/ncm](https://github.com/HazyResearch/ncm) (MIT).
-- `docs/`, `radar/`, `.github/workflows/radar.yml`: the Paper Radar site (new AI papers, refreshed every 2 hours).
+- `docs/`, `radar/`, `.github/workflows/`: the Paper Radar site (https://ncm-thoughts-docs.vercel.app). New AI papers refreshed every 2 hours, a "No code yet" list of trending papers with no code/repo/model found, Hacker News and new-repo feeds, and a weekly digest (Mondays).
 - `tests/`: `pytest` (set `NCM_LITE_SLOW=1` to also run the real-checkpoint test).
 
 ## Licence and credit

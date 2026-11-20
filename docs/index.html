@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paper Radar</title>
 <style>
-:root{--bg:#f7f7f5;--card:#fff;--fg:#1b1b1b;--mut:#6b6b6b;--line:#e4e4df;--acc:#2f5bea;--chip:#eceff9;--ok:#0f8a4b}
-@media (prefers-color-scheme:dark){:root{--bg:#121316;--card:#1b1c21;--fg:#ececec;--mut:#9a9aa3;--line:#2b2c33;--acc:#7b9bff;--chip:#262a3a;--ok:#4cc58a}}
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1b1b1b;--mut:#6b6b6b;--line:#e4e4df;--acc:#2f5bea;--chip:#eceff9;--ok:#0f8a4b;--warn:#b45309;--warnbg:#fff4e0}
+@media (prefers-color-scheme:dark){:root{--bg:#121316;--card:#1b1c21;--fg:#ececec;--mut:#9a9aa3;--line:#2b2c33;--acc:#7b9bff;--chip:#262a3a;--ok:#4cc58a;--warn:#f5b45c;--warnbg:#2a2318}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 header,main{max-width:900px;margin:0 auto;padding:0 16px}
 header{padding-top:24px}h1{margin:0 0 4px;font-size:24px}.sub{color:var(--mut);font-size:13px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 0;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:8px 12px;color:var(--mut);cursor:pointer;font:inherit}
+.tab.on{color:var(--fg);border-color:var(--acc);font-weight:600}
 .bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
 input[type=search],select,button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 input[type=search]{flex:1;min-width:200px}button{cursor:pointer}button.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
@@ -22,33 +25,45 @@ label.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut
 .card h2{font-size:16px;margin:0 0 4px}.card h2 a{color:var(--fg);text-decoration:none}.card h2 a:hover{color:var(--acc)}
 .meta{font-size:12px;color:var(--mut);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .tag{font-size:11px;background:var(--chip);border-radius:6px;padding:1px 7px;margin-right:4px}
+.st{font-size:11px;border-radius:6px;padding:1px 7px;margin-right:4px;background:var(--chip)}
+.st.open{background:var(--warnbg);color:var(--warn);font-weight:600}.st.official{color:var(--ok)}
 .new{background:var(--ok);color:#fff;font-size:10px;border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
 .links a{font-size:13px;color:var(--acc);margin-right:12px;text-decoration:none}
 details summary{cursor:pointer;color:var(--mut);font-size:13px}p.abs{margin:6px 0 0;font-size:14px}
-#updated{margin-top:2px;font-weight:600;color:var(--fg)}#status{font-size:12px;color:var(--mut);margin:4px 0 12px}footer{max-width:900px;margin:30px auto;padding:0 16px;color:var(--mut);font-size:12px}
+.note{background:var(--warnbg);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;margin:12px 0}
+h3{margin:22px 0 4px;font-size:15px}ul.plain{margin:6px 0;padding-left:18px}ul.plain li{margin:3px 0}
+#status{font-size:12px;color:var(--mut);margin:4px 0 12px}#updated{margin-top:2px;font-weight:600;color:var(--fg)}
+footer{max-width:900px;margin:30px auto;padding:0 16px;color:var(--mut);font-size:12px}
 </style>
 </head>
 <body>
 <header>
   <h1>Paper Radar</h1>
-  <div class="sub">New AI papers from Hugging Face Daily Papers and arXiv, with code links. Updated every 2 hours.</div>
+  <div class="sub">New AI papers, open-source opportunities and what developers are talking about. Updated every 2 hours.</div>
   <div class="sub" id="updated" aria-live="polite"></div>
-  <div class="bar">
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-v="papers">Papers</button>
+    <button class="tab" data-v="open">No code yet</button>
+    <button class="tab" data-v="hn">Hacker News</button>
+    <button class="tab" data-v="repos">New repos</button>
+    <button class="tab" data-v="digest">Weekly digest</button>
+  </nav>
+  <div class="bar" id="bar">
     <input id="q" type="search" placeholder="Search title, abstract, authors…" aria-label="Search">
     <select id="sort" aria-label="Sort"><option value="date">Newest</option><option value="upvotes">Most upvoted</option><option value="stars">Most GitHub stars</option></select>
     <select id="days" aria-label="Time range"><option value="2">Last 2 days</option><option value="7" selected>Last 7 days</option><option value="14">Last 14 days</option></select>
     <select id="src" aria-label="Source"><option value="">All sources</option><option value="hf">HF Daily only</option><option value="arxiv">arXiv only</option></select>
-    <label class="chk"><input id="code" type="checkbox"> Has code</label>
+    <label class="chk" id="codeLbl"><input id="code" type="checkbox"> Has code</label>
     <button id="refresh" class="primary">Refresh</button>
   </div>
   <div class="chips" id="chips"></div>
   <div id="status">Loading…</div>
 </header>
 <main id="list"></main>
-<footer>Data: Hugging Face Daily Papers + arXiv. Topic tags are keyword-based and approximate. Source: this repo, <code>radar/</code>.</footer>
+<footer>Data: Hugging Face Daily Papers, arXiv, Hacker News, GitHub. Topic tags are keyword-based and approximate. Source: this repo, <code>radar/</code>.</footer>
 <script>
 const REFRESH_MS = 2*60*60*1000;
-let papers=[], topics={}, active=new Set(), generated=null, checkedAt=null, lastSeen=0;
+let papers=[], extras={hn:[],repos:[]}, topics={}, active=new Set(), generated=null, checkedAt=null, lastSeen=0, view='papers', digestWeek=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
@@ -59,11 +74,7 @@ function tag(p){
   p.topics=Object.keys(topics).filter(k=>topics[k].some(w=>t.includes(w)));
   return p;
 }
-async function loadStatic(){
-  const r=await fetch('data/papers.json?t='+Date.now(),{cache:'no-store'});
-  if(!r.ok) throw new Error('papers.json '+r.status);
-  const d=await r.json(); generated=d.generated_at; return d.papers;
-}
+async function j(url){const r=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(url+' '+r.status);return r.json()}
 async function loadLiveHF(){ // newer than the last scheduled build; HF API allows browser requests
   const out=[]; const today=new Date();
   for(let i=0;i<3;i++){
@@ -76,7 +87,8 @@ async function loadLiveHF(){ // newer than the last scheduled build; HF API allo
         out.push({id:p.id,title:it.title||p.title,summary:it.summary||p.summary||'',
           authors:(p.authors||[]).map(a=>a.name).slice(0,8),date:(p.publishedAt||'').slice(0,10),
           upvotes:p.upvotes||0,code:p.githubRepo||null,stars:p.githubStars||null,project:p.projectPage||null,
-          tldr:p.ai_summary||null,source:'hf',url:'https://huggingface.co/papers/'+p.id});
+          tldr:p.ai_summary||null,source:'hf',url:'https://huggingface.co/papers/'+p.id,
+          status:p.githubRepo?'official':'unchecked',promised:false});
       }
     }catch(e){}
   }
@@ -85,13 +97,13 @@ async function loadLiveHF(){ // newer than the last scheduled build; HF API allo
 async function load(live){
   $('refresh').disabled=true; $('status').textContent='Refreshing…';
   try{
-    if(!Object.keys(topics).length) topics=await (await fetch('data/topics.json')).json();
-    const map=new Map((await loadStatic()).map(p=>[p.id,p]));
-    if(live) for(const p of await loadLiveHF()) map.set(p.id,p);
+    if(!Object.keys(topics).length) topics=await j('data/topics.json');
+    const d=await j('data/papers.json'); generated=d.generated_at;
+    const map=new Map(d.papers.map(p=>[p.id,p]));
+    if(live) for(const p of await loadLiveHF()){ const old=map.get(p.id); map.set(p.id, old?Object.assign({},old,{upvotes:p.upvotes,code:p.code||old.code,stars:p.stars??old.stars}):p); }
     papers=[...map.values()].map(tag);
-    drawChips(); render();
-    checkedAt=new Date(); showUpdated();
-    $('status').textContent=`${papers.length} papers · next auto-refresh in 2h`;
+    try{extras=await j('data/extras.json')}catch(e){}
+    checkedAt=new Date(); showUpdated(); drawChips(); await render();
   }catch(e){ $('status').textContent='Could not load data: '+e.message; }
   $('refresh').disabled=false;
 }
@@ -103,26 +115,76 @@ function showUpdated(){
 }
 setInterval(showUpdated,60000);
 function drawChips(){
-  $('chips').innerHTML=Object.keys(topics).map(k=>`<span class="chip${active.has(k)?' on':''}" data-k="${esc(k)}">${esc(k)}</span>`).join('');
+  $('chips').innerHTML=(view==='papers'||view==='open')?Object.keys(topics).map(k=>`<span class="chip${active.has(k)?' on':''}" data-k="${esc(k)}">${esc(k)}</span>`).join(''):'';
 }
-function render(){
-  const q=$('q').value.trim().toLowerCase(), days=+$('days').value, src=$('src').value, needCode=$('code').checked, sort=$('sort').value;
-  const cutoff=new Date(Date.now()-days*864e5).toISOString().slice(0,10);
-  let rows=papers.filter(p=>p.date>=cutoff&&(!src||p.source===src)&&(!needCode||p.code)
-    &&(!active.size||p.topics.some(t=>active.has(t)))
-    &&(!q||(p.title+' '+p.summary+' '+p.authors.join(' ')).toLowerCase().includes(q)));
-  rows.sort((a,b)=>sort==='date'?(b.date.localeCompare(a.date)||b.upvotes-a.upvotes):((b[sort]||0)-(a[sort]||0)));
-  $('list').innerHTML=rows.slice(0,200).map(p=>{
-    const isNew=lastSeen&&new Date(p.date).getTime()>lastSeen-864e5;
-    const code=safeUrl(p.code), proj=safeUrl(p.project);
-    return `<article class="card"><h2><a href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a>${isNew?'<span class="new">NEW</span>':''}</h2>
-    <div class="meta"><span>${esc(p.date)}</span><span>${p.source==='hf'?'HF Daily':'arXiv'}</span>${p.upvotes?`<span>▲ ${p.upvotes}</span>`:''}${p.stars?`<span>★ ${p.stars}</span>`:''}<span>${esc(p.authors.slice(0,3).join(', '))}${p.authors.length>3?' et al.':''}</span></div>
-    <div>${p.topics.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+function badges(p){
+  const b=[];
+  if(p.code) b.push('<span class="st official">Official code</span>');
+  else if(p.status==='community'){
+    const r=(p.gh_repos||[])[0]; if(r) b.push(`<span class="st">Possible repo: <a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.name)}</a> ★${r.stars}</span>`);
+    if(p.hf_model_count) b.push(`<span class="st">${p.hf_model_count} HF model${p.hf_model_count>1?'s':''}</span>`);
+  } else if(p.status==='open') b.push('<span class="st open">No code, repo or model found</span>');
+  if(p.promised) b.push('<span class="st">Says code/models will be released</span>');
+  return b.join('');
+}
+function paperCard(p){
+  const isNew=lastSeen&&new Date(p.date).getTime()>lastSeen-864e5;
+  const code=safeUrl(p.code), proj=safeUrl(p.project);
+  return `<article class="card"><h2><a href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a>${isNew?'<span class="new">NEW</span>':''}</h2>
+    <div class="meta"><span>${esc(p.date)}</span><span>${p.source==='hf'?'HF Daily':'arXiv'}</span>${p.upvotes?`<span>▲ ${p.upvotes}</span>`:''}${p.stars?`<span>★ ${p.stars}</span>`:''}<span>${esc((p.authors||[]).slice(0,3).join(', '))}${(p.authors||[]).length>3?' et al.':''}</span></div>
+    <div>${badges(p)}${(p.topics||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
     ${p.tldr?`<p class="abs">${esc(p.tldr)}</p>`:''}
     <details><summary>Abstract</summary><p class="abs">${esc(p.summary)}</p></details>
     <div class="links">${code?`<a href="${esc(code)}" target="_blank" rel="noopener">Code</a>`:''}${proj?`<a href="${esc(proj)}" target="_blank" rel="noopener">Project</a>`:''}<a href="https://arxiv.org/pdf/${esc(p.id)}" target="_blank" rel="noopener">PDF</a></div></article>`;
-  }).join('')||'<p class="sub">No papers match these filters.</p>';
 }
+function renderPapers(){
+  const q=$('q').value.trim().toLowerCase(), days=+$('days').value, src=$('src').value, needCode=$('code').checked, sort=view==='open'&&$('sort').value==='date'?'upvotes':$('sort').value;
+  const cutoff=new Date(Date.now()-days*864e5).toISOString().slice(0,10);
+  let rows=papers.filter(p=>p.date>=cutoff&&(!src||p.source===src)&&(view==='open'?p.status==='open':(!needCode||p.code))
+    &&(!active.size||p.topics.some(t=>active.has(t)))
+    &&(!q||(p.title+' '+p.summary+' '+(p.authors||[]).join(' ')).toLowerCase().includes(q)));
+  rows.sort((a,b)=>sort==='date'?(b.date.localeCompare(a.date)||b.upvotes-a.upvotes):((b[sort]||0)-(a[sort]||0)));
+  const note=view==='open'?`<div class="note"><b>Open-source opportunities.</b> Papers trending on Hugging Face (5+ upvotes) where an automated search found no official code, no GitHub repo mentioning the paper and no Hugging Face model. Only the top 40 trending papers are checked each run. <b>Absence is not proof</b>: search by hand before you build, and check the licence of anything you reuse.</div>`:'';
+  $('list').innerHTML=note+(rows.slice(0,200).map(paperCard).join('')||'<p class="sub">No papers match these filters.</p>');
+  $('status').textContent=`${rows.length} shown · ${papers.length} papers loaded · next auto-refresh in 2h`;
+}
+function renderHN(){
+  const q=$('q').value.trim().toLowerCase();
+  const rows=extras.hn.filter(h=>!q||h.title.toLowerCase().includes(q));
+  $('list').innerHTML=`<div class="note">Hacker News stories from the last 7 days matching AI keywords. Matching is loose, so some are off-topic.</div>`+
+    rows.map(h=>`<article class="card"><h2><a href="${esc(safeUrl(h.url))}" target="_blank" rel="noopener">${esc(h.title)}</a></h2><div class="meta"><span>▲ ${h.points}</span><span>${h.comments} comments</span><span>${esc(h.date)}</span><a href="${esc(h.hn_url)}" target="_blank" rel="noopener">discussion</a></div></article>`).join('');
+  $('status').textContent=`${rows.length} stories`;
+}
+function renderRepos(){
+  const q=$('q').value.trim().toLowerCase();
+  const rows=extras.repos.filter(r=>!q||(r.name+' '+(r.description||'')).toLowerCase().includes(q));
+  $('list').innerHTML=`<div class="note">GitHub repos created in the last 7 days with AI topics and 20+ stars. Brand-new repos can have inflated or fake stars: check before trusting.</div>`+
+    rows.map(r=>`<article class="card"><h2><a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.name)}</a></h2><div class="meta"><span>★ ${r.stars}</span><span>${esc(r.language||'')}</span><span>${esc(r.license||'no licence')}</span><span>${esc(r.date)}</span></div><p class="abs">${esc(r.description||'')}</p></article>`).join('');
+  $('status').textContent=`${rows.length} repos`;
+}
+async function renderDigest(){
+  let weeks=[]; try{weeks=await j('data/digests/index.json')}catch(e){}
+  if(!weeks.length){ $('list').innerHTML='<p class="sub">No digest yet. One is generated every Monday.</p>'; return; }
+  digestWeek=weeks.includes(digestWeek)?digestWeek:weeks[0];
+  const d=await j(`data/digests/${digestWeek}.json`);
+  const pl=a=>a.length?`<ul class="plain">`+a.map(p=>`<li><a href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${esc(p.title)}</a> <span class="sub">▲ ${p.upvotes||0}${p.stars?' · ★ '+p.stars:''}${p.promised?' · code promised':''}</span></li>`).join('')+'</ul>':'<p class="sub">None this week.</p>';
+  $('list').innerHTML=`<div class="bar"><select id="wk">${weeks.map(w=>`<option${w===digestWeek?' selected':''}>${esc(w)}</option>`).join('')}</select></div>
+   <p class="sub">${esc(d.window[0])} to ${esc(d.window[1])} · ${d.papers_seen} papers seen · ${d.papers_with_code} with code. Generated automatically from ranked data (no AI-written text).</p>
+   <h3>Open-source opportunities (no code found)</h3>${pl(d.opportunities)}
+   <h3>Top papers with code</h3>${pl(d.top_with_code)}
+   <h3>New repos</h3><ul class="plain">${d.new_repos.map(r=>`<li><a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">${esc(r.name)}</a> <span class="sub">★ ${r.stars} · ${esc(r.description||'')}</span></li>`).join('')}</ul>
+   <h3>On Hacker News</h3><ul class="plain">${d.hn.map(h=>`<li><a href="${esc(safeUrl(h.url))}" target="_blank" rel="noopener">${esc(h.title)}</a> <span class="sub">▲ ${h.points}</span></li>`).join('')}</ul>
+   <h3>Topics this week (papers matching keywords)</h3><p class="sub">${Object.entries(d.topic_counts).map(([k,v])=>`${esc(k)}: ${v}`).join(' · ')}</p>`;
+  $('wk').addEventListener('change',e=>{digestWeek=e.target.value;renderDigest()});
+  $('status').textContent='';
+}
+async function render(){
+  $('bar').style.display=(view==='papers'||view==='open')?'flex':(view==='digest'?'none':'flex');
+  for(const id of ['sort','days','src','codeLbl']) $(id).style.display=(view==='papers'||view==='open')?'':'none';
+  $('codeLbl').style.display=view==='papers'?'':'none';
+  if(view==='papers'||view==='open') renderPapers(); else if(view==='hn') renderHN(); else if(view==='repos') renderRepos(); else await renderDigest();
+}
+$('tabs').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;view=v;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));drawChips();render()});
 $('chips').addEventListener('click',e=>{const k=e.target.dataset.k;if(!k)return;active.has(k)?active.delete(k):active.add(k);drawChips();render()});
 for(const id of ['q','sort','days','src','code']) $(id).addEventListener('input',render);
 $('refresh').addEventListener('click',()=>load(true));
